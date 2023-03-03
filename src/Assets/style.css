@@ -5,6 +5,8 @@
 }
 
 #map {
-  height: 100vh;
+  height: 820px;
+  width: 820px;
   background-color: #125;
+  margin: 5px;
 }
