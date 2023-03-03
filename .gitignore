@@ -1,4 +1,9 @@
+# Dossier ignoré
 .idea
 dist
 node_modules
+
+# Fichier ignoré
 package-lock.json
+app.config.json
+app.config.prod.json

@@ -1,5 +1,5 @@
 {
-  "name": "js-oop-webpack",
+  "name": "tp-js-oop",
   "version": "0.0.1",
   "description": "Introduction a webpack",
   "private": true,
@@ -23,10 +23,14 @@
   },
   "homepage": "https://github.com/NicolasLoppin66/Webpack-introduction#readme",
   "devDependencies": {
+    "@types/mapbox-gl": "^2.7.10",
     "css-loader": "^6.7.3",
     "html-webpack-plugin": "^5.5.0",
     "style-loader": "^3.3.1",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^3.11.3"
+  },
+  "dependencies": {
+    "mapbox-gl": "^2.13.0"
   }
 }

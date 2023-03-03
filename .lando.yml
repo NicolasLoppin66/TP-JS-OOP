@@ -1,4 +1,4 @@
-name: js-oop-webpack
+name: tp-js-oop
 services:
   node:
     type: node:16
