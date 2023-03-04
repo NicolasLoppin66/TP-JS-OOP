@@ -10,7 +10,7 @@ export class MarkerService {
 
         try {
             // On tente des les déserialiser
-            arrMarker = JSON.parse(serializedData);
+            this.arrMarker = JSON.parse(serializedData);
         } catch (error) {
             // Si cela ne fonctionne pas (pour cause de donnée corrompus).
             // On supprime les données. 
@@ -22,5 +22,14 @@ export class MarkerService {
 
         // On récupere le tableau
         return result;
+    }
+
+    /**
+     * CRUD : Create all
+     */
+    saveAll() {
+        // TODO : code
+
+        return false;
     }
 }
