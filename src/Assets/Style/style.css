@@ -1,0 +1,27 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  height: 100vh;
+}
+
+#map {
+  flex-grow: 1;
+  background-color: #125;
+}
+
+#form {
+  flex: 0 1 500px;
+  height: 100vh;
+  background-color: #ede9d5;
+}
+
+/* .formulaire {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+} */

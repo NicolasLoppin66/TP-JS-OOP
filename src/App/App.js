@@ -3,10 +3,12 @@ import Config from '../../app.config.json';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 // Importation du service de marker.
-import {MarkerService} from './Services/MarkerService';
+import { MarkerService } from './Services/MarkerService';
 
 // Importation du style de base du site.
-import '../Assets/style.css'
+import '../Assets/Style/style.css'
+import '../Assets/Style/bootstrap.css'
+import '../Assets/Style/bootstrap-utilities.css'
 
 // Importation du module mapbox.
 import mapboxGL from 'mapbox-gl';
@@ -44,12 +46,29 @@ class App {
     /**
      * <input type="datetime-local"> pour l'insertion de la date de début et la date de fin de l'evenement.
      */
-    elInputDate;
+    elInputDateDebut;
 
     /**
-     * <input type="number"> pour l'insertion des coordonnées géographiques.
+     * <input type="datetime-local"> pour l'insertion de la date de début et la date de fin de l'evenement.
      */
-    elInputCoord;
+    elInputDateFin;
+
+    /**
+     * <input type="number"> pour l'insertion des coordonnées géographiques en latiltude.
+     */
+    elInputCoordLat;
+
+    /**
+     * <input type="number"> pour l'insertion des coordonnées géographiques Longitude.
+     */
+    elInputCoordLng;
+
+    /**
+     * <input type="submit"> pour comfirmer l'insertion des info
+     */
+    elSubmit;
+
+    labelTitle
 
     /* +++++ Propriétés de fonctionnement +++++ */
     /**
@@ -65,122 +84,159 @@ class App {
     start() {
         console.log('App démarrer ...');
         // console.log("la clé d'api est :", Config.api.mapbox_gl.Api_Key);
+
         this.markerService = new MarkerService();
 
-        this.initDom();
         this.initMapBox();
+        this.initForm();
 
         this.arrMarker = this.markerService.getAll();
 
         if (this.arrMarker.length <= 0) return;
-
-
     }
 
-    initDom() {
+    initMapBox() {
         // Création de la div dans le document (dans la page du site)
         this.elDivMap = document.createElement('div');
         this.elDivMap.id = 'map';
 
-        // Création de la balise <form noValidate>
-        const elForm = document.createElement('form');
-        elForm.noValidate = true;
-
-        // Création du l'input <input type="text">
-        this.elInputTitle = document.createElement('input');
-        this.elInputTitle.setAttribute('type', 'text');
-        this.elInputTitle.setAttribute('placeholder', 'Titre');
-
-        this.elInputDescEvent = document.createElement('textarea');
-        this.elInputDescEvent.setAttribute('placeholer', 'Description');
-
-        this.elInputDate = document.createElement('input');
-        this.elInputDate.setAttribute('type', 'datetime-local');
-        this.elInputDate.setAttribute('placeholder', 'Date de début');
-
-        this.elInputDate = document.createElement('input');
-        this.elInputDate.setAttribute('type', 'datetime-local');
-        this.elInputDate.setAttribute('placeholder', 'Date de fin');
-
-        this.elInputCoord = document.createElement('input');
-        this.elInputCoord.setAttribute('type', 'number');
-
-        const elBtnNewMarker = document.createElement('button');
-        elBtnNewMarker.type = 'button';
-        elBtnNewMarker.textContent = "Ajouter l'evenement";
-        // elBtnNewMarker.addEventListener('click',)
-
         document.body.append(this.elDivMap);
-    }
 
-    initMapBox() {
         // Instancie la carte et récupere la clé api.
-        mapboxGL.accessToken = Config.api.mapbox_gl.Api_Key;
+        mapboxGL.accessToken = Config.api.mapbox_gl.api_key;
 
         // Affiche la carte MapBox
         this.map =
             new mapboxGL.Map({
                 attributionControl: false,
                 container: this.elDivMap, // Récupération de l'identifiant du container de la map (ID : #map)
-                style: Config.api.mapbox_gl.Map_Styles.streets, // Vas récupéré dans le config le style de la carte MapBox
-                center: {lng: 2.2137, lat: 46.2276}, // Centre la carte au niveau de la France.
-                zoom: 5, // Mais un zoom initiale de 5.
-                maxZoom: 12, // Le zoom est restraint a 12 au maximum. (0 - 24)
-                minZoom: 3 // Le zoom est restraint a 3 au minimum. (0 - 24)
-            });
-        this.map.addControl(new mapboxGL.GeolocateControl());
-        this.map.addControl(new mapboxGL.NavigationControl());
+                style: Config.api.mapbox_gl.map_style.streets, // Vas récupéré dans le config le style de la carte MapBox
+                center: { lng: 6.0935318, lat: 46.5975118 }, // Centre la carte au niveau de la France. 46.8789065,6.1736436,6
+                zoom: 5.5, // Mais un zoom initiale de 5.
+                maxZoom: 12, // Le zoom est restraint a 12 au maximum. (0 - 24) | (0 < x < 24)
+                minZoom: 3 // Le zoom est restraint a 3 au minimum. (0 - 24) | (0 < x < 24)
 
-        this.map.on('load', () => {
-            this.map.addSource('marker', {
-                // type: "geojson",
-                // data: {
-                type: "FeatureCollection",
-                features: [
-                    {
-                        type: "Feature",
-                        properties: {
-                            description: "Ma maison"
-                        },
-                        geometry: {
-                            type: "Point",
-                            coordinates: [42.660957, 2.884561]
-                        }
-                    },
-                ]
-                // }
             });
-            this.map.addLayer({
-                'id': "marker",
-                'type': "symbol",
-                'source': "marker",
-                "layout": {
-                    'icon-image': ['get', 'icon'],
-                    'icon-allow-overlap': true
-                }
-            });
-
-            this.map.on('click', 'marker', (e) => {
-                const coordinates
-                    = e.features[0].geometry.coordinates.slice();
-                const description
-                    = e.features[0].properties.description;
-
-                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-                    coordinates[0] += e.lngLat.lng >
-                    coordinates[0] ? 360 : -360;
-                }
-
-                this.map.popup()
-                    .setLngLat(coordinates)
-                    .setHTML(description)
-                    .addTo(this.map);
-            });
-        })
+        this.map.addControl(new mapboxGL.GeolocateControl({
+            positionOptions: {
+                enableHighAccuracy: true
+            }
+        }));
+        this.map.addControl(new mapboxGL.NavigationControl({
+            visualizePitch: true,
+            showCompass: true, // Permet l'apparition du compas sur la carte mapbox
+            showZoom: true, // Permet l'affiche sur la carte des bouton + | - pour le zoom sur la carte.
+        }));
 
         // Crée une marque au click sur la carte
         this.map.on('click', this.mapHandlerClickMap.bind(this));
+    }
 
+    initForm() {
+        // Création de la balise <form noValidate>
+        this.elDivForm = document.createElement('div');
+        this.elDivForm.id = 'form';
+
+        this.elForm = document.createElement('form');
+        this.elForm.noValidate = true;
+        this.elForm.setAttribute('method', 'get');
+        this.elForm.className = "d-flex justify-content-center flex-wrap";
+
+        // Crée le label
+        this.labelTitle = document.createElement('label');
+        this.labelTitle.innerHTML = "Titre de l'evenement";
+        this.labelTitle.className = "form-label";
+        this.elForm.append(this.labelTitle);
+        // Crée l'input
+        this.elInputTitle = document.createElement('input');
+        this.elInputTitle.setAttribute('type', 'text');
+        this.elInputTitle.setAttribute('name', 'title');
+        this.elInputTitle.setAttribute('placeholder', 'La fête de l\'ours');
+        this.elInputTitle.className = "form-control w-75";
+        // L'ajoute au formulaire
+        this.elForm.append(this.elInputTitle);
+
+        // Crée le label
+        this.labelDescEvent = document.createElement('label');
+        this.labelDescEvent.innerHTML = "Description de l'evenement";
+        this.labelDescEvent.className = "form-label"
+        this.elForm.append(this.labelDescEvent);
+        // Crée l'input
+        this.elInputDescEvent = document.createElement('textarea');
+        this.elInputDescEvent.setAttribute('name', 'description');
+        this.elInputDescEvent.setAttribute('rows', 10);
+        this.elInputDescEvent.setAttribute('cols', 30);
+        this.elInputDescEvent.setAttribute('placeholder', 'La fête de l\’Ours, une légende ancestrale et une pure tradition catalane');
+        this.elInputDescEvent.className = "form-control w-75";
+        // L'ajoute au formulaire
+        this.elForm.append(this.elInputDescEvent);
+
+        // Crée le label
+        this.labelCoordLat = document.createElement('label');
+        this.labelCoordLat.innerHTML = "Latitude";
+        this.labelCoordLat.className = "form-label";
+        this.elForm.append(this.labelCoordLat);
+        // Crée l'input
+        this.elInputCoordLat = document.createElement('input');
+        this.elInputCoordLat.setAttribute('type', 'number');
+        this.elInputCoordLat.setAttribute('name', 'lat');
+        this.elInputCoordLat.setAttribute('placeholder', 'lat : 46.5975118');
+        this.elInputCoordLat.className = "form-control w-50 m-2";
+        // L'ajoute au formulaire
+        this.elForm.append(this.elInputCoordLat);
+
+        // Crée l'input
+        this.elInputCoordLng = document.createElement('input');
+        this.elInputCoordLng.setAttribute('type', 'number');
+        this.elInputCoordLng.setAttribute('name', 'lng');
+        this.elInputCoordLng.setAttribute('placeholder', 'lng : 6.0935318');
+        this.elInputCoordLng.className = "form-control w-50 m-2";
+        // Crée le label
+        this.labelCoordLng = document.createElement('label');
+        this.labelCoordLng.innerHTML = "Longitude";
+        this.labelCoordLng.className = "form-label";
+        this.elForm.append(this.labelCoordLng);
+        // L'ajoute au formulaire
+        this.elForm.append(this.elInputCoordLng);
+
+        // Crée le label
+        this.labelDateDebut = document.createElement('label');
+        this.labelDateDebut.innerHTML = "Date de début";
+        this.labelDateDebut.className = "form-label";
+        this.elForm.append(this.labelDateDebut);
+        // Crée l'input
+        this.elInputDateDebut = document.createElement('input');
+        this.elInputDateDebut.setAttribute('type', 'date');
+        this.elInputDateDebut.setAttribute('name', 'dateDebut');
+        this.elInputDateDebut.className = "form-control w-75 m-2";
+        // L'ajoute au formulaire
+        this.elForm.append(this.elInputDateDebut);
+
+        // Crée le label
+        this.labelDateFin = document.createElement('label');
+        this.labelDateFin.innerHTML = "Date de fin";
+        this.labelDateFin.className = "form-label";
+        this.elForm.append(this.labelDateFin);
+        // Crée l'input
+        this.elInputDateFin = document.createElement('input');
+        this.elInputDateFin.setAttribute('type', 'date');
+        this.elInputDateFin.setAttribute('name', 'dateFin');
+        this.elInputDateFin.className = "form-control w-75 m-2";
+        // L'ajoute au formulaire
+        this.elForm.append(this.elInputDateFin);
+
+        this.elDivSubmit = document.createElement('div');
+        // Crée le bouton
+        this.elSubmit = document.createElement('input');
+        this.elSubmit.setAttribute('type', 'submit');
+        this.elSubmit.setAttribute('value', 'Submit');
+        this.elSubmit.className = "btn btn-outline-success";
+
+        this.elDivSubmit.appendChild(this.elSubmit);
+
+        this.elForm.append(this.elSubmit);
+        this.elDivForm.append(this.elForm);
+        document.body.append(this.elDivForm);
     }
 
     renderMarker() {

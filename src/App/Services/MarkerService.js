@@ -1,3 +1,5 @@
+const STORAGE_NAME = 'les_markers';
+
 export class MarkerService {
     /**
      * Crud : Read all

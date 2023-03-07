@@ -8,6 +8,9 @@ import app from "./App";
     dateUpdate: 1666180099794
 }
  */
+
+const STORAGE_NAME = '';
+
 export class Marker {
     title;
     content;
