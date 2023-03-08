@@ -6,22 +6,20 @@ import { LocalStorageService } from "../Services/LocalStorageService";
 const STORAGE_NAME = "service_marker";
 
 export class Marker {
-    /* +++++ Element du DOM +++++ */
-
     arrLocalEvt = [];
-    localEvt;
+    localEvtStorage = null;
 
     value;
     form;
     map;
 
-    evtDescription;
-    evtDateDebut;
-    evtDateFin;
-    evtSubmit;
-    evtTitle;
-    evtLng;
-    evtLat;
+    evtDescription = null;
+    evtDateDebut = null;
+    evtDateFin = null;
+    evtSubmit = null;
+    evtTitle = null;
+    evtLng = null;
+    evtLat = null;
 
     constructor(map) {
         this.map = map;
@@ -36,7 +34,7 @@ export class Marker {
         this.form = document.forms[0];
         this.form.addEventListener('submit', this.handlerNewMarker.bind(this));
 
-        this.LocalEvt = new LocalStorageService(STORAGE_NAME);
+        this.localEvtStorage = new LocalStorageService(STORAGE_NAME);
     }
 
     /**
@@ -44,8 +42,8 @@ export class Marker {
      * @returns data
      */
     start() {
-        let dataJson = this.localEvt.getJSON();
-        console.log(dataJson);
+        let dataJson = this.localEvtStorage.getJSON();
+        // console.log(dataJson);
         if (dataJson === null) {
             return;
         }
@@ -60,10 +58,10 @@ export class Marker {
     handlerNewMarker(evt) {
         let strTitle = this.evtTitle.value.trim();
         let strDescription = this.evtDescription.value.trim();
-        let strLat = this.evtLat.value;
-        let strLng = this.evtLng.value;
-        let strDateDebut = this.evtDateDebut.value;
-        let strDateFin = this.evtDateFin.value;
+        let strEvtLat = this.evtLat.value;
+        let strEvtLng = this.evtLng.value;
+        let strEvtDateDebut = this.evtDateDebut.value;
+        let strEvtDateFin = this.evtDateFin.value;
 
         evt.preventDefault();
 
@@ -74,10 +72,10 @@ export class Marker {
 
         newLocalEvt.title = strTitle;
         newLocalEvt.description = strDescription;
-        newLocalEvt.lat = strLat;
-        newLocalEvt.lng = strLng;
-        newLocalEvt.dateDebut = strDateDebut;
-        newLocalEvt.dateFin = strDateFin;
+        newLocalEvt.latitude = strEvtLat;
+        newLocalEvt.longitude = strEvtLng;
+        newLocalEvt.dateDebut = strEvtDateDebut;
+        newLocalEvt.dateFin = strEvtDateFin;
 
         console.log(newLocalEvt);
 
@@ -85,7 +83,7 @@ export class Marker {
 
         this.render();
 
-        this.localEvt.setJSON(this.arrLocalEvt);
+        this.localEvtStorage.setJSON(this.arrLocalEvt);
     }
 
     /**
@@ -103,10 +101,12 @@ export class Marker {
         if (debut > maintenant && debut > maintenant + (3 * 24 * 60 * 60 * 1000)) {
             colorMarker = '#16FF00';
         }
+
         // Evenement dans 3 jours ou moins.
         if (debut > maintenant && debut < maintenant + (3 * 24 * 60 * 60 * 1000)) {
             colorMarker = '#FF6D28';
         }
+
         // Evenement dépassé.
         if (fin < maintenant) {
             colorMarker = '#FF1E1E';

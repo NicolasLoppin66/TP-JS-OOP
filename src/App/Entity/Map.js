@@ -55,11 +55,11 @@ export class Map {
 
     getCoordinate() {
         this.map.on('click', (evt) => {
-            console.log(evt);
+            // console.log(evt);
             this.evtLat.value = evt.lngLat.lat
-            console.log(evt.lngLat.lat);
+            // console.log(evt.lngLat.lat);
             this.evtLng.value = evt.lngLat.lng
-            console.log(evt.lngLat.lng);
+            // console.log(evt.lngLat.lng);
         });
     }
 
