@@ -1,6 +1,10 @@
 export class LocalStorageService {
     storageKey;
 
+    constructor(key) {
+        this.storageKey = key;
+    }
+
     /**
      * Défini la valeur.
      * @param {*} value 
@@ -32,7 +36,7 @@ export class LocalStorageService {
     }
 
     /**
-     * Recupére les info en format json
+     * Recupére et donne les infos au format json
      * @returns 
      */
     getJSON() {
